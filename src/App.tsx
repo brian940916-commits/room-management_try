@@ -136,6 +136,7 @@ export function App() {
           <BookingFlow
             lang={lang}
             items={cartItems}
+            onRemoveItem={removeItem}
             onComplete={handleBookingComplete}
             onCancel={() => navigate('cart')}
           />

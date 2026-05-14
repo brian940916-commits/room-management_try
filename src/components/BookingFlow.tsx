@@ -5,6 +5,7 @@ import { t } from '../data/i18n';
 interface BookingFlowProps {
   lang: Lang;
   items: CartItem[];
+  onRemoveItem: (index: number) => void;
   onComplete: (booking: Booking) => void;
   onCancel: () => void;
 }
@@ -15,7 +16,7 @@ function generateId() {
   return 'BK' + Date.now().toString(36).toUpperCase();
 }
 
-export function BookingFlow({ lang, items, onComplete, onCancel }: BookingFlowProps) {
+export function BookingFlow({ lang, items, onRemoveItem, onComplete, onCancel }: BookingFlowProps) {
   const tr = t(lang);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [guestName, setGuestName] = useState('');
@@ -78,11 +79,28 @@ export function BookingFlow({ lang, items, onComplete, onCancel }: BookingFlowPr
         {step === 1 && (
           <div>
             <h2 className="font-bold text-gray-800 mb-4">{tr.booking.step1}</h2>
+            {items.length === 0 && (
+              <div className="text-center py-8 text-gray-400 mb-4">
+                <p className="text-3xl mb-2">🛒</p>
+                <p className="text-sm">{tr.cart.empty}</p>
+              </div>
+            )}
             <div className="space-y-3 mb-6">
               {items.map((item, i) => (
                 <div key={i} className="border border-gray-100 rounded-xl p-4 text-sm">
-                  <p className="font-medium text-gray-800">{lang === 'zh' ? item.propertyName.zh : item.propertyName.en}</p>
-                  <p className="text-gray-500">{lang === 'zh' ? item.roomType.zh : item.roomType.en}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-800">{lang === 'zh' ? item.propertyName.zh : item.propertyName.en}</p>
+                      <p className="text-gray-500">{lang === 'zh' ? item.roomType.zh : item.roomType.en}</p>
+                    </div>
+                    <button
+                      onClick={() => onRemoveItem(i)}
+                      className="flex-shrink-0 text-gray-300 hover:text-red-500 transition-colors text-base leading-none p-1"
+                      title={tr.cart.remove}
+                    >
+                      ✕
+                    </button>
+                  </div>
                   <div className="flex justify-between mt-2 text-gray-600">
                     <span>{item.checkIn} → {item.checkOut} ({item.nights} {tr.common.nightShort})</span>
                     <span className="font-medium">NT${(item.price * item.nights).toLocaleString()}</span>
@@ -98,7 +116,11 @@ export function BookingFlow({ lang, items, onComplete, onCancel }: BookingFlowPr
               <button onClick={onCancel} className="px-4 py-2 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">
                 {tr.common.cancel}
               </button>
-              <button onClick={() => setStep(2)} className="flex-1 py-2 bg-primary-700 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium">
+              <button
+                disabled={items.length === 0}
+                onClick={() => setStep(2)}
+                className="flex-1 py-2 bg-primary-700 text-white rounded-xl hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
+              >
                 {tr.common.confirm} →
               </button>
             </div>
