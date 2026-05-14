@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { CartItem, Booking, SearchParams } from './types/property';
 import { useRoute } from './hooks/useRoute';
 import { useCart } from './hooks/useCart';
 import { useFavorites } from './hooks/useFavorites';
 import { useLang } from './hooks/useLang';
 import { useAuth } from './hooks/useAuth';
+import { useAdmin } from './hooks/useAdmin';
+import { persistBooking, updateBookingStatus, getAllBookings, getActiveProperties } from './data/adminStore';
 
 import { Navbar } from './components/Navbar';
 import { HomePage } from './components/HomePage';
@@ -19,15 +21,30 @@ import { ItineraryPage } from './components/ItineraryPage';
 import { FavoritesPage } from './components/FavoritesPage';
 import { AuthModal } from './components/AuthModal';
 
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminLayout } from './components/admin/AdminLayout';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminProperties } from './components/admin/AdminProperties';
+import { AdminPricing } from './components/admin/AdminPricing';
+import { AdminOrders } from './components/admin/AdminOrders';
+import { AdminInteractions } from './components/admin/AdminInteractions';
+
 export function App() {
   const { page, params, navigate } = useRoute();
   const { items: cartItems, addItem, removeItem, clearCart, count: cartCount } = useCart();
   const { favoriteIds, toggle: toggleFavorite, isFavorite } = useFavorites();
   const { lang, toggleLang } = useLang();
   const { user, login, logout, showModal, openModal, closeModal, isLoggedIn } = useAuth();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const { isAdminLoggedIn, adminLogin, adminLogout, loginError } = useAdmin();
+
+  // Bookings: loaded from localStorage so admin can see them
+  const [bookings, setBookings] = useState<Booking[]>(() => getAllBookings());
   const [lastBooking, setLastBooking] = useState<Booking | null>(null);
   const [searchParams, setSearchParams] = useState<SearchParams>({ station: '', checkIn: '', checkOut: '', guests: 2 });
+
+  // Active properties (respects admin status overrides)
+  const [activeProperties, setActiveProperties] = useState(() => getActiveProperties());
+  useEffect(() => { setActiveProperties(getActiveProperties()); }, [page]);
 
   function handleSearch(sp: SearchParams) {
     setSearchParams(sp);
@@ -49,12 +66,51 @@ export function App() {
   }
 
   function handleBookingComplete(booking: Booking) {
-    setBookings(prev => [booking, ...prev]);
+    persistBooking(booking);
+    setBookings(getAllBookings());
     setLastBooking(booking);
     clearCart();
     navigate('bookingConfirm');
   }
 
+  function handleCancelOrder(id: string, _refundAmount: number) {
+    updateBookingStatus(id, 'cancelled');
+    setBookings(getAllBookings());
+  }
+
+  const isAdminPage = page.startsWith('admin');
+
+  // ── Admin pages ──────────────────────────────────────────────────────
+  if (isAdminPage) {
+    if (!isAdminLoggedIn) {
+      return (
+        <AdminLogin
+          onLogin={adminLogin}
+          error={loginError}
+          onBackToSite={() => navigate('home')}
+        />
+      );
+    }
+
+    const adminContent = (() => {
+      switch (page) {
+        case 'adminDashboard':    return <AdminDashboard />;
+        case 'adminProperties':   return <AdminProperties />;
+        case 'adminPricing':      return <AdminPricing />;
+        case 'adminOrders':       return <AdminOrders />;
+        case 'adminInteractions': return <AdminInteractions />;
+        default:                  return <AdminDashboard />;
+      }
+    })();
+
+    return (
+      <AdminLayout currentPage={page} onNavigate={navigate} onLogout={adminLogout}>
+        {adminContent}
+      </AdminLayout>
+    );
+  }
+
+  // ── Front-end pages ───────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar
@@ -79,6 +135,7 @@ export function App() {
             onSearch={handleSearch}
             onPropertyClick={id => navigate('property', { propertyId: id })}
             onStationClick={handleStationClick}
+            properties={activeProperties}
           />
         )}
 
@@ -88,6 +145,7 @@ export function App() {
             searchParams={searchParams}
             favoriteIds={favoriteIds}
             onFavoriteToggle={toggleFavorite}
+            properties={activeProperties}
             onPropertyClick={id => navigate('property', {
               propertyId: id,
               checkIn: searchParams.checkIn,
@@ -155,6 +213,7 @@ export function App() {
           <OrdersPage
             lang={lang}
             bookings={bookings}
+            onCancel={handleCancelOrder}
             onBack={() => navigate('home')}
           />
         )}
@@ -168,8 +227,14 @@ export function App() {
 
       {/* Footer */}
       <footer className="bg-primary-800 text-primary-200 text-center py-6 text-sm mt-auto">
-        <p>© 2025 Agent TT · 中彰投台鐵小站住宿平台</p>
+        <p>© 2026 Agent TT · 中彰投台鐵小站住宿平台</p>
         <p className="mt-1 text-primary-400 text-xs">台中 · 豐原 · 彰化 · 員林 · 二水 · 集集 · 水里 · 車埕</p>
+        <button
+          onClick={() => navigate('adminLogin')}
+          className="mt-2 text-primary-600 text-xs hover:text-primary-400 transition-colors"
+        >
+          後台管理
+        </button>
       </footer>
 
       {showModal && (

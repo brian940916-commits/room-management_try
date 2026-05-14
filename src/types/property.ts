@@ -47,6 +47,8 @@ export interface Policy {
   maxCapacity: number;
 }
 
+export type PropertyStatus = 'active' | 'inactive' | 'pending';
+
 export interface Property {
   id: number;
   name: { zh: string; en: string };
@@ -60,6 +62,7 @@ export interface Property {
   reviews: Review[];
   rooms: Room[];
   policies: Policy;
+  status?: PropertyStatus;
 }
 
 export interface CartItem {
@@ -81,6 +84,7 @@ export interface Booking {
   guestName: string;
   email: string;
   phone: string;
+  specialRequests?: string;
   paymentMethod: 'creditCard' | 'ePay' | 'bankTransfer';
   status: 'confirmed' | 'pending' | 'cancelled';
   totalAmount: number;

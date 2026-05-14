@@ -105,7 +105,7 @@ const translations = {
       title: '客服聊天室',
       placeholder: '請輸入訊息…',
       send: '送出',
-      quickReplies: ['如何前往？', '停車資訊', '早餐時間', '取消政策', '寵物入住'],
+      quickReplies: ['如何前往？', '停車資訊', '早餐時間', '行李寄放', '取消政策', '寵物入住'],
       botGreeting: '您好！我是 Agent TT 客服，有什麼可以幫助您的嗎？',
     },
     itinerary: {
@@ -254,7 +254,7 @@ const translations = {
       title: 'Customer Chat',
       placeholder: 'Type a message…',
       send: 'Send',
-      quickReplies: ['How to get there?', 'Parking Info', 'Breakfast Time', 'Cancellation Policy', 'Pet Policy'],
+      quickReplies: ['How to get there?', 'Parking Info', 'Breakfast Time', 'Luggage Storage', 'Cancellation Policy', 'Pet Policy'],
       botGreeting: 'Hi! I\'m the Agent TT assistant. How can I help you?',
     },
     itinerary: {

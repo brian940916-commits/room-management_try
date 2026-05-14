@@ -10,7 +10,13 @@ export type Page =
   | 'orders'
   | 'chat'
   | 'itinerary'
-  | 'favorites';
+  | 'favorites'
+  | 'adminLogin'
+  | 'adminDashboard'
+  | 'adminProperties'
+  | 'adminPricing'
+  | 'adminOrders'
+  | 'adminInteractions';
 
 export interface RouteParams {
   propertyId?: number;

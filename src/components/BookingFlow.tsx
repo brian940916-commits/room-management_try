@@ -22,6 +22,7 @@ export function BookingFlow({ lang, items, onRemoveItem, onComplete, onCancel }:
   const [guestName, setGuestName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [specialRequests, setSpecialRequests] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
   const [processing, setProcessing] = useState(false);
 
@@ -43,6 +44,7 @@ export function BookingFlow({ lang, items, onRemoveItem, onComplete, onCancel }:
       guestName,
       email,
       phone,
+      specialRequests: specialRequests || undefined,
       paymentMethod,
       status: 'confirmed',
       totalAmount: total,
@@ -160,6 +162,50 @@ export function BookingFlow({ lang, items, onRemoveItem, onComplete, onCancel }:
                   onChange={e => setPhone(e.target.value)}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   placeholder="+886 9xx-xxx-xxx"
+                />
+              </div>
+              {/* Special requests — optional, listed all at once */}
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-xs text-gray-400 mb-3">
+                  {lang === 'zh' ? '特殊需求（選填，可略過）' : 'Special requests (optional)'}
+                </p>
+                <div className="space-y-2">
+                  {[
+                    { id: 'earlyCheckin',  zh: '提早入住', en: 'Early check-in' },
+                    { id: 'lateCheckout',  zh: '延遲退房', en: 'Late check-out' },
+                    { id: 'luggageStorage',zh: '行李寄放', en: 'Luggage storage' },
+                    { id: 'airportShuttle',zh: '機場接送', en: 'Airport shuttle' },
+                    { id: 'infantBed',     zh: '嬰兒床', en: 'Infant crib' },
+                  ].map(req => {
+                    const label = lang === 'zh' ? req.zh : req.en;
+                    const checked = specialRequests.includes(req.id);
+                    return (
+                      <label key={req.id} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setSpecialRequests(prev =>
+                              checked ? prev.replace(req.id + ',', '').replace(',' + req.id, '').replace(req.id, '')
+                                      : prev ? prev + ',' + req.id : req.id
+                            );
+                          }}
+                          className="w-4 h-4 accent-primary-700"
+                        />
+                        <span className="text-sm text-gray-700">{label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <textarea
+                  value={specialRequests.replace(/[a-zA-Z,]+/g, '')}
+                  onChange={e => setSpecialRequests(prev => {
+                    const codes = prev.match(/[a-zA-Z]+/g) ?? [];
+                    return [...codes, e.target.value.trim()].filter(Boolean).join(',');
+                  })}
+                  rows={2}
+                  className="mt-3 w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  placeholder={lang === 'zh' ? '其他需求請填寫…' : 'Other requests…'}
                 />
               </div>
             </div>
