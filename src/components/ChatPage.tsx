@@ -14,10 +14,12 @@ const CANNED_RESPONSES: Record<string, { zh: string; en: string }> = {
   '取消政策':          { zh: '入住前 10 天可免費取消。4～9 天收 30%。3 天內不退款。', en: '10+ days: free cancel. 4–9 days: 30% fee. Within 3 days: no refund.' },
   '寵物入住':          { zh: '部分房源支援寵物入住，請在搜尋時勾選「寵物友善」篩選。', en: 'Some properties are pet-friendly. Filter by "Pet Friendly" when searching.' },
   'How to get there?': { zh: '', en: 'Take TRA to the nearest station. Walk or taxi. We also offer shuttle service — please inform us in advance.' },
-  'Parking Info':      { zh: '', en: 'Free parking available (10 spots). Reservation recommended.' },
-  'Breakfast Time':    { zh: '', en: 'Breakfast is served from 07:30 to 09:30, with Taiwanese and Western options.' },
+  'Parking Info':       { zh: '', en: 'Free parking available (10 spots). Reservation recommended.' },
+  'Breakfast Time':     { zh: '', en: 'Breakfast is served from 07:30 to 09:30, with Taiwanese and Western options.' },
+  'Luggage Storage':    { zh: '', en: 'Luggage storage is available at the front desk from 08:00–22:00, free of charge.' },
+  '行李寄放':            { zh: '行李可寄放於前台，時間為 08:00～22:00，免費服務。', en: '' },
   'Cancellation Policy':{ zh: '', en: '10+ days: free cancel. 4–9 days: 30% fee. Within 3 days: no refund.' },
-  'Pet Policy':        { zh: '', en: 'Some properties are pet-friendly. Filter by "Pet Friendly" when searching.' },
+  'Pet Policy':         { zh: '', en: 'Some properties are pet-friendly. Filter by "Pet Friendly" when searching.' },
 };
 
 interface ChatPageProps {

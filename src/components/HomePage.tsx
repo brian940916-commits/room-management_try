@@ -1,10 +1,9 @@
-import type { Lang, SearchParams } from '../types/property';
+import type { Lang, SearchParams, Property } from '../types/property';
 import { t } from '../data/i18n';
 import { HeroSearch } from './HeroSearch';
 import { StationCard } from './StationCard';
 import { PropertyCard } from './PropertyCard';
 import { stations } from '../data/stations';
-import { properties } from '../data/properties';
 
 interface HomePageProps {
   lang: Lang;
@@ -13,6 +12,7 @@ interface HomePageProps {
   onSearch: (params: SearchParams) => void;
   onPropertyClick: (id: number) => void;
   onStationClick: (stationId: string) => void;
+  properties?: Property[];
 }
 
 export function HomePage({
@@ -22,9 +22,10 @@ export function HomePage({
   onSearch,
   onPropertyClick,
   onStationClick,
+  properties: propsProp,
 }: HomePageProps) {
   const tr = t(lang);
-  const featured = properties.slice(0, 4);
+  const featured = (propsProp ?? []).slice(0, 4);
 
   return (
     <div>

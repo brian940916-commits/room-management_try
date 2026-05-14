@@ -8,6 +8,7 @@ export interface FilterState {
   minRating: number;
   maxDistKm: number;
   amenities: string[];
+  capacities: number[];   // 0 = any, 1, 2, 4, 6+
 }
 
 const DEFAULT_FILTERS: FilterState = {
@@ -16,6 +17,7 @@ const DEFAULT_FILTERS: FilterState = {
   minRating: 0,
   maxDistKm: 5,
   amenities: [],
+  capacities: [],
 };
 
 interface FilterSidebarProps {
@@ -26,8 +28,22 @@ interface FilterSidebarProps {
 
 export { DEFAULT_FILTERS };
 
+const CAPACITY_OPTIONS = [
+  { value: 1, zh: '單人（1人）',    en: 'Single (1)' },
+  { value: 2, zh: '雙人（2人）',    en: 'Double (2)' },
+  { value: 4, zh: '四人（3-4人）',  en: 'Quad (3-4)' },
+  { value: 6, zh: '家庭（5人以上）', en: 'Family (5+)' },
+];
+
 export function FilterSidebar({ lang, filters, onChange }: FilterSidebarProps) {
   const tr = t(lang);
+
+  function toggleCapacity(val: number) {
+    const next = filters.capacities.includes(val)
+      ? filters.capacities.filter(c => c !== val)
+      : [...filters.capacities, val];
+    onChange({ ...filters, capacities: next });
+  }
 
   function toggleAmenity(code: string) {
     const next = filters.amenities.includes(code)
@@ -73,6 +89,29 @@ export function FilterSidebar({ lang, filters, onChange }: FilterSidebarProps) {
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300"
             placeholder="NT$ 10000"
           />
+        </div>
+      </div>
+
+      {/* Room type / capacity */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {tr.filter.roomType}
+          <span className="text-xs text-gray-400 ml-1">({tr.common.optional})</span>
+        </label>
+        <div className="space-y-1.5">
+          {CAPACITY_OPTIONS.map(opt => (
+            <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.capacities.includes(opt.value)}
+                onChange={() => toggleCapacity(opt.value)}
+                className="w-4 h-4 accent-primary-700 rounded"
+              />
+              <span className="text-sm text-gray-700">
+                {lang === 'zh' ? opt.zh : opt.en}
+              </span>
+            </label>
+          ))}
         </div>
       </div>
 
