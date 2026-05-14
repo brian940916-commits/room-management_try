@@ -231,9 +231,9 @@ export function App() {
         <p className="mt-1 text-primary-400 text-xs">台中 · 豐原 · 彰化 · 員林 · 二水 · 集集 · 水里 · 車埕</p>
         <button
           onClick={() => navigate('adminLogin')}
-          className="mt-2 text-primary-600 text-xs hover:text-primary-400 transition-colors"
+          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 bg-primary-700 hover:bg-primary-600 text-white text-sm font-medium rounded-xl border border-primary-600 transition-colors shadow-sm"
         >
-          後台管理
+          <span>⚙️</span> 後台管理
         </button>
       </footer>
 
