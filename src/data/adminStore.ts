@@ -71,7 +71,11 @@ export function getAllProperties(): Property[] {
     ...(edits[p.id] ?? {}),
     status: statusMap[p.id] ?? 'active',
   }));
-  return [...merged, ...getNewProperties()];
+  const newProps = getNewProperties().map(p => ({
+    ...p,
+    status: statusMap[p.id] ?? p.status ?? 'pending',
+  }));
+  return [...merged, ...newProps];
 }
 
 export function getActiveProperties(): Property[] {
